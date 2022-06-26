@@ -10,4 +10,9 @@ class Variant extends Model
         'title', 'description'
     ];
 
+public function productVariant()
+{
+    return $this->hasMany('App\Models\ProductVariant')->select('id','variant','variant_id','product_id');
+}
+
 }

@@ -39,11 +39,12 @@
                             <div class="col-md-4">
                                 <div class="form-group">
                                     <label for="">Option</label>
-                                    <select v-model="item.option" class="form-control">
-                                        <option v-for="variant in variants"
+                                    <select v-model="item.option" class="form-control">                                        
+                                        <Option v-for="variant in variants"
                                                 :value="variant.id">
                                             {{ variant.title }}
-                                        </option>
+                                        </Option>
+                                       
                                     </select>
                                 </div>
                             </div>
@@ -56,6 +57,9 @@
                                     <input-tag v-model="item.tags" @input="checkVariant" class="form-control"></input-tag>
                                 </div>
                             </div>
+
+
+
                         </div>
                     </div>
                     <div class="card-footer" v-if="product_variant.length < variants.length && product_variant.length < 3">
@@ -196,10 +200,14 @@ export default {
             })
 
             console.log(product);
-        }
+        },
 
 
     },
+
+
+
+
     mounted() {
         console.log('Component mounted.')
     }

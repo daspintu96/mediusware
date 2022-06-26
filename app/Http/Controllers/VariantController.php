@@ -17,6 +17,7 @@ class VariantController extends Controller
     {
         $variants = Variant::paginate(10);
         return view('products.variant.index', compact('variants'));
+
     }
 
     /**
