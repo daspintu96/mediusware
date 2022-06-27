@@ -18,11 +18,8 @@ class ProductController extends Controller
      */
     public function index()
     {
-        $products = Product::with('ProductVariantPrice')->paginate(3);
+        $products = Product::with('ProductVariantPrice')->orderBy('id','desc')->paginate(3);
         $searchVariants = Variant::select('title', 'id')->with('productVariant')->get();
-        //    return $products[0]->ProductVariantPrice[0]->productVariant[0]->variantName;
-        //    return $products[0]->ProductVariantPrice;
-
         return view('products.index', compact('products', 'searchVariants'));
     }
 
@@ -37,11 +34,10 @@ class ProductController extends Controller
         return view('products.create', compact('variants'));
     }
 
-    public function search(Request $request)
-    {
+    public function search(Request $request)    {
 
         if (isset($request->title)) {
-            $searchResults = Product::where('title', 'LIKE', '%' . $request->title . '%')->with('ProductVariantPrice')->get();
+            $searchResults = Product::where('title', 'LIKE', '%' . $request->title . '%')->with('ProductVariantPrice')->paginate(2);
             $mode = 'search';   
         } elseif (isset($request->price_from) && isset($request->price_to)) {
             $searchResults = ProductVariantPrice::whereBetween('price', [1, 100])->with('ProductVariantPrice')->get();
@@ -51,7 +47,8 @@ class ProductController extends Controller
         } elseif (isset($request->variant)) {
             return $searchResults = ProductVariant::where('variant_id','LIKE','%'.$request->variant)->with('product')->get();
         }
-        $searchVariants = Variant::select('title', 'id')->with('productVariant')->get();  
+       
+        $searchVariants = Variant::select('title', 'id')->with('productVariant')->get();           
         return view('products.show', compact('searchResults', 'mode', 'searchVariants'));
     }
 
@@ -139,8 +136,10 @@ class ProductController extends Controller
      */
     public function edit(Product $product)
     {
+        
+        $single_product = Product::where('id',$product->id)->with('ProductVariantPrice')->first();
         $variants = Variant::all();
-        return view('products.edit', compact('variants'));
+        return view('products.edit', compact('single_product','variants'));
     }
 
     /**

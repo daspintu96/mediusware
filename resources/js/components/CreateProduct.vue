@@ -18,7 +18,6 @@
                         </div>
                     </div>
                 </div>
-
                 <div class="card shadow mb-4">
                     <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
                         <h6 class="m-0 font-weight-bold text-primary">Media</h6>
@@ -114,8 +113,12 @@ export default {
         variants: {
             type: Array,
             required: true
-        }
+        },
+        singleProduct:{
+            
+        }      
     },
+   
     data() {
         return {
             product_name: '',
@@ -194,6 +197,7 @@ export default {
 
 
             axios.post('/product', product).then(response => {
+                alert('Data add successfull');
                 console.log(response.data);
             }).catch(error => {
                 console.log(error);
