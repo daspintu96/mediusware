@@ -6,63 +6,112 @@
                     <div class="card-body">
                         <div class="form-group">
                             <label for="">Product Name</label>
-                            <input type="text" v-model="product_name" placeholder="Product Name" class="form-control">
+                            <input
+                                type="text"
+                                v-model="product_name"
+                                placeholder="Product Name"
+                                class="form-control"
+                            />
                         </div>
                         <div class="form-group">
                             <label for="">Product SKU</label>
-                            <input type="text" v-model="product_sku" placeholder="Product Name" class="form-control">
+                            <input
+                                type="text"
+                                v-model="product_sku"
+                                placeholder="Product Name"
+                                class="form-control"
+                            />
                         </div>
                         <div class="form-group">
                             <label for="">Description</label>
-                            <textarea v-model="description" id="" cols="30" rows="4" class="form-control"></textarea>
+                            <textarea
+                                v-model="description"
+                                id=""
+                                cols="30"
+                                rows="4"
+                                class="form-control"
+                            ></textarea>
                         </div>
                     </div>
                 </div>
                 <div class="card shadow mb-4">
-                    <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                    <div
+                        class="card-header py-3 d-flex flex-row align-items-center justify-content-between"
+                    >
                         <h6 class="m-0 font-weight-bold text-primary">Media</h6>
                     </div>
                     <div class="card-body border">
-                        <vue-dropzone ref="myVueDropzone" id="dropzone" :options="dropzoneOptions"></vue-dropzone>
+                        <vue-dropzone
+                            ref="myVueDropzone"
+                            id="dropzone"
+                            :options="dropzoneOptions"
+                        ></vue-dropzone>
                     </div>
                 </div>
             </div>
 
             <div class="col-md-6">
                 <div class="card shadow mb-4">
-                    <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
-                        <h6 class="m-0 font-weight-bold text-primary">Variants</h6>
+                    <div
+                        class="card-header py-3 d-flex flex-row align-items-center justify-content-between"
+                    >
+                        <h6 class="m-0 font-weight-bold text-primary">
+                            Variants
+                        </h6>
                     </div>
                     <div class="card-body">
-                        <div class="row" v-for="(item,index) in product_variant">
+                        <div
+                            class="row"
+                            v-for="(item, index) in product_variant"
+                        >
                             <div class="col-md-4">
                                 <div class="form-group">
                                     <label for="">Option</label>
-                                    <select v-model="item.option" class="form-control">                                        
-                                        <Option v-for="variant in variants"
-                                                :value="variant.id">
+                                    <select
+                                        v-model="item.option"
+                                        class="form-control"
+                                    >
+                                        <Option
+                                            v-for="variant in variants"
+                                            :value="variant.id"
+                                        >
                                             {{ variant.title }}
                                         </Option>
-                                       
                                     </select>
                                 </div>
                             </div>
                             <div class="col-md-8">
                                 <div class="form-group">
-                                    <label v-if="product_variant.length != 1" @click="product_variant.splice(index,1); checkVariant"
-                                           class="float-right text-primary"
-                                           style="cursor: pointer;">Remove</label>
+                                    <label
+                                        v-if="product_variant.length != 1"
+                                        @click="
+                                            product_variant.splice(index, 1);
+                                            checkVariant;
+                                        "
+                                        class="float-right text-primary"
+                                        style="cursor: pointer;"
+                                        >Remove</label
+                                    >
                                     <label v-else for="">.</label>
-                                    <input-tag v-model="item.tags" @input="checkVariant" class="form-control"></input-tag>
+                                    <input-tag
+                                        v-model="item.tags"
+                                        @input="checkVariant"
+                                        class="form-control"
+                                    ></input-tag>
                                 </div>
                             </div>
-
-
-
                         </div>
                     </div>
-                    <div class="card-footer" v-if="product_variant.length < variants.length && product_variant.length < 3">
-                        <button @click="newVariant" class="btn btn-primary">Add another option</button>
+                    <div
+                        class="card-footer"
+                        v-if="
+                            product_variant.length < variants.length &&
+                                product_variant.length < 3
+                        "
+                    >
+                        <button @click="newVariant" class="btn btn-primary">
+                            Add another option
+                        </button>
                     </div>
 
                     <div class="card-header text-uppercase">Preview</div>
@@ -70,22 +119,32 @@
                         <div class="table-responsive">
                             <table class="table">
                                 <thead>
-                                <tr>
-                                    <td>Variant</td>
-                                    <td>Price</td>
-                                    <td>Stock</td>
-                                </tr>
+                                    <tr>
+                                        <td>Variant</td>
+                                        <td>Price</td>
+                                        <td>Stock</td>
+                                    </tr>
                                 </thead>
                                 <tbody>
-                                <tr v-for="variant_price in product_variant_prices">
-                                    <td>{{ variant_price.title }}</td>
-                                    <td>
-                                        <input type="text" class="form-control" v-model="variant_price.price">
-                                    </td>
-                                    <td>
-                                        <input type="text" class="form-control" v-model="variant_price.stock">
-                                    </td>
-                                </tr>
+                                    <tr
+                                        v-for="variant_price in product_variant_prices"
+                                    >
+                                        <td>{{ variant_price.title }}</td>
+                                        <td>
+                                            <input
+                                                type="text"
+                                                class="form-control"
+                                                v-model="variant_price.price"
+                                            />
+                                        </td>
+                                        <td>
+                                            <input
+                                                type="text"
+                                                class="form-control"
+                                                v-model="variant_price.stock"
+                                            />
+                                        </td>
+                                    </tr>
                                 </tbody>
                             </table>
                         </div>
@@ -94,15 +153,21 @@
             </div>
         </div>
 
-        <button @click="saveProduct" type="submit" class="btn btn-lg btn-primary">Save</button>
+        <button
+            @click="saveProduct"
+            type="submit"
+            class="btn btn-lg btn-primary"
+        >
+            Save
+        </button>
         <button type="button" class="btn btn-secondary btn-lg">Cancel</button>
     </section>
 </template>
 
 <script>
-import vue2Dropzone from 'vue2-dropzone'
-import 'vue2-dropzone/dist/vue2Dropzone.min.css'
-import InputTag from 'vue-input-tag'
+import vue2Dropzone from "vue2-dropzone";
+import "vue2-dropzone/dist/vue2Dropzone.min.css";
+import InputTag from "vue-input-tag";
 
 export default {
     components: {
@@ -114,17 +179,22 @@ export default {
             type: Array,
             required: true
         },
-        singleProduct:{
-            
-        }      
+        single_product: {
+            required: true
+        }
+ 
     },
-   
+
     data() {
         return {
-            product_name: '',
-            product_sku: '',
-            description: '',
+            product_name: "",
+            product_sku: "",
+            description: "",
             images: [],
+            edit: {
+                product_variant_id: [],
+                tags : []
+            },
             product_variant: [
                 {
                     option: this.variants[0].id,
@@ -133,53 +203,57 @@ export default {
             ],
             product_variant_prices: [],
             dropzoneOptions: {
-                url: 'https://httpbin.org/post',
+                url: "https://httpbin.org/post",
                 thumbnailWidth: 150,
                 maxFilesize: 0.5,
-                headers: {"My-Awesome-Header": "header value"}
+                headers: { "My-Awesome-Header": "header value" }
             }
-        }
+        };
     },
     methods: {
         // it will push a new object into product variant
         newVariant() {
-            let all_variants = this.variants.map(el => el.id)
+            let all_variants = this.variants.map(el => el.id);
             let selected_variants = this.product_variant.map(el => el.option);
-            let available_variants = all_variants.filter(entry1 => !selected_variants.some(entry2 => entry1 == entry2))
+            let available_variants = all_variants.filter(
+                entry1 => !selected_variants.some(entry2 => entry1 == entry2)
+            );
             // console.log(available_variants)
 
             this.product_variant.push({
                 option: available_variants[0],
                 tags: []
-            })
+            });
         },
 
         // check the variant and render all the combination
         checkVariant() {
             let tags = [];
             this.product_variant_prices = [];
-            this.product_variant.filter((item) => {
+            this.product_variant.filter(item => {
                 tags.push(item.tags);
-            })
+            });
 
             this.getCombn(tags).forEach(item => {
                 this.product_variant_prices.push({
                     title: item,
                     price: 0,
                     stock: 0
-                })
-            })
+                });
+            });
         },
 
         // combination algorithm
         getCombn(arr, pre) {
-            pre = pre || '';
+            pre = pre || "";
             if (!arr.length) {
                 return pre;
             }
             let self = this;
-            let ans = arr[0].reduce(function (ans, value) {
-                return ans.concat(self.getCombn(arr.slice(1), pre + value + '/'));
+            let ans = arr[0].reduce(function(ans, value) {
+                return ans.concat(
+                    self.getCombn(arr.slice(1), pre + value + "/")
+                );
             }, []);
             return ans;
         },
@@ -193,27 +267,89 @@ export default {
                 product_image: this.images,
                 product_variant: this.product_variant,
                 product_variant_prices: this.product_variant_prices
-            }
+            };
 
-
-            axios.post('/product', product).then(response => {
-                alert('Data add successfull');
-                console.log(response.data);
-            }).catch(error => {
-                console.log(error);
-            })
+            axios
+                .put("/product/update", product)
+                .then(response => {
+                    alert("Data add successfull");
+                    console.log(response.data);
+                })
+                .catch(error => {
+                    console.log(error);
+                });
 
             console.log(product);
-        },
-
-
+        }
     },
 
-
-
+    editVariant(){
+        
+    },
 
     mounted() {
-        console.log('Component mounted.')
-    }
+        console.log("Component mounted.");
+
+      
+        this.product_name = this.single_product.title;
+        this.product_sku = this.single_product.sku;
+        this.description = this.single_product.description;
+
+
+        //   edit variant work
+        for (var i in this.single_product.product_variant) {
+            if (
+                !this.edit.product_variant_id.some(
+                    data =>
+                        data ===
+                        this.single_product.product_variant[i].variant_id
+                )
+            ) {
+                this.edit.product_variant_id.push(
+                    this.single_product.product_variant[i].variant_id
+                );
+            }
+        }
+      
+        let m = 0
+        for(var j in this.edit.product_variant_id){
+
+            for(var n in this.single_product.product_variant){
+                if(this.single_product.product_variant[n].variant_id == this.edit.product_variant_id[j]){
+                    this.edit.tags.push(
+                        this.single_product.product_variant[n].variant
+                    )
+                }
+            }
+                    this.product_variant[m] = {
+            option: this.edit.product_variant_id[j],
+            tags : this.edit.tags
+           
+        }
+           m++ 
+           this.edit.tags = []
+        }
+  
+    // product variant price edited value ..............
+let p = 0;
+for(var q in this.single_product.product_variant_price){
+    let pvone, pvtwo, pvthree
+     this.single_product.product_variant_price[p].pvone != null ?
+        pvone =  this.single_product.product_variant_price[p].pvone.variant : pvone = ""
+    this.single_product.product_variant_price[p].pvtwo != null ? 
+        pvtwo =  this.single_product.product_variant_price[p].pvtwo.variant : pvtwo = ""
+     this.single_product.product_variant_price[p].pvthree != null ? 
+        pvthree =  this.single_product.product_variant_price[p].pvthree.variant : pvthree = ""   
+this.product_variant_prices.push({
+                    title: 
+                    pvone+"/"+pvtwo+"/"+pvthree,                
+                    price: this.single_product.product_variant_price[p].price,
+                    stock: this.single_product.product_variant_price[p].stock
+                });
+              p++
 }
+
+//         //  console.log(this.single_product.product_variant_price[0])
+    }
+};
 </script>

@@ -12,7 +12,10 @@ class Variant extends Model
 
 public function productVariant()
 {
-    return $this->hasMany('App\Models\ProductVariant')->select('id','variant','variant_id','product_id');
+    return $this->hasMany('App\Models\ProductVariant')
+    ->select('variant_id','variant')
+    ->DISTINCT('variant');
+    // return $this->hasMany('App\Models\ProductVariant')->select('id','variant')->distinct('variant');
 }
 
 }

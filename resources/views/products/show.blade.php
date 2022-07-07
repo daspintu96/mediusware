@@ -12,7 +12,7 @@
                     @foreach($searchVariants as $sv)
                     <option disabled>----{{$sv->title}}---- </option>
                     @foreach($sv->productVariant as $v)
-                    <option value="{{$v->id}}">{{$v->variant}} </option>
+                    <option value="{{$v->variant}}">{{$v->variant}} </option>
                     @endforeach
                     @endforeach
                 </select>
@@ -35,7 +35,7 @@
             </div>
         </div>
     </form>
-  
+
     <!-- ---------Search Result--------- -->
     <div class="card-body">
         <div class="table-response">
@@ -52,10 +52,11 @@
 
                 <tbody>
 
-
-                    @foreach($searchResults as $sr)
+                    @php $i = 0 @endphp
+                    @foreach($searchResults as $sr)                    
+                    @php $i++ @endphp
                     <tr>
-                        <td>1</td>
+                        <td>{{$i}}</td>
                         <td>{{$sr->title}} <br> Created at :{{$sr->created_at->diffForHumans()}}</td>
                         <td width="200px">{{$sr->description}}</td>
                         <td>
@@ -89,7 +90,7 @@
             </table>
         </div>
     </div>
-   
+
     <div class="card-footer">
         <div class="row justify-content-between">
             <div class="col-md-6">

@@ -8,6 +8,7 @@ use App\Models\ProductVariantPrice;
 use App\Models\Variant;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use phpDocumentor\Reflection\Types\Null_;
 
 class ProductController extends Controller
 {
@@ -18,8 +19,11 @@ class ProductController extends Controller
      */
     public function index()
     {
-        $products = Product::with('ProductVariantPrice')->orderBy('id','desc')->paginate(3);
+        $products = Product::with('ProductVariantPrice')->orderBy('id', 'desc')->paginate(3);
         $searchVariants = Variant::select('title', 'id')->with('productVariant')->get();
+
+
+
         return view('products.index', compact('products', 'searchVariants'));
     }
 
@@ -34,22 +38,38 @@ class ProductController extends Controller
         return view('products.create', compact('variants'));
     }
 
-    public function search(Request $request)    {
-
-        if (isset($request->title)) {
-            $searchResults = Product::where('title', 'LIKE', '%' . $request->title . '%')->with('ProductVariantPrice')->paginate(2);
-            $mode = 'search';   
-        } elseif (isset($request->price_from) && isset($request->price_to)) {
-            $searchResults = ProductVariantPrice::whereBetween('price', [1, 100])->with('ProductVariantPrice')->get();
-        } elseif (isset($request->date)) {
-            $searchResults = Product::where('created_at', 'LIKE', '%' . $request->date . '%')->with('ProductVariantPrice')->paginate(2);
-            $mode = 'search';
-        } elseif (isset($request->variant)) {
-            return $searchResults = ProductVariant::where('variant_id','LIKE','%'.$request->variant)->with('product')->get();
+    public function search(Request $request)
+    {
+        switch ($request) {
+            case (isset($request->title)):
+                $searchResults = Product::where('title', 'LIKE', '%' . $request->title . '%')
+                    ->with('ProductVariantPrice')
+                    ->paginate(3);
+                break;
+            case (isset($request->price_from) && isset($request->price_to)):
+                $searchResults = Product::whereIn(
+                    'id',
+                    ProductVariantPrice::select('product_id')
+                        ->whereBetween('price', [$request->price_from, $request->price_to])
+                )->paginate(3);
+                break;
+            case (isset($request->date)):
+                $searchResults = Product::where('created_at', 'LIKE', '%' . $request->date . '%')
+                    ->with('ProductVariantPrice')
+                    ->paginate(3);
+                break;
+            default:
+                $searchResults = Product::whereIn(
+                    'id',
+                    ProductVariant::select('product_id')
+                        ->where('variant', 'LIKE', '%' . $request->variant)
+                )->with('ProductVariantPrice')
+                    ->paginate(3);
+                break;
         }
-       
-        $searchVariants = Variant::select('title', 'id')->with('productVariant')->get();           
-        return view('products.show', compact('searchResults', 'mode', 'searchVariants'));
+
+        $searchVariants = Variant::select('title', 'id')->with('productVariant')->get();
+        return view('products.show', compact('searchResults', 'searchVariants'));
     }
 
     /**
@@ -59,9 +79,10 @@ class ProductController extends Controller
      * @return \Illuminate\Http\JsonResponse
      */
     public function store(Request $request)
-    {      
-       $finalData = [];          
-        $pv = [];      
+    {
+        return $request->all();
+        $finalData = [];
+        $pv = [];
         DB::beginTransaction();
         try {
             $data = Product::create([
@@ -69,43 +90,41 @@ class ProductController extends Controller
                 'sku' => $request->sku,
                 'description' => $request->description
             ]);
-
             foreach ($request->product_variant as $product_variant) {
                 foreach ($product_variant['tags'] as $ta) {
                     array_push($pv, ['variant_id' => $product_variant['option'], 'variant' => $ta, 'product_id' => $data->id]);
                 }
             }
-            ProductVariant::insert($pv);    
-
-        foreach($request->product_variant_prices as $pvp){
-            // return $pvp['title'];
-            $i = 0;
-            $titleEx = (explode("/",$pvp['title']));
-            foreach($titleEx as $d){               
-                $i++;
-                if(!empty($d)){
-                    $id = ProductVariant::where('variant',$d)->where('product_id',$data->id)->first();
-                    array_push($finalData, ["product_variant_$i" => $id->id]);
+            ProductVariant::insert($pv);
+            foreach ($request->product_variant_prices as $pvp) {
+                $titleEx = (explode("/", $pvp['title']));
+                $i = 0;
+                foreach ($titleEx as $tx) {
+                    $i++;
+                    if (!empty($tx)) {
+                        $cid = ProductVariant::where([
+                            'variant' => $tx,
+                            'product_id' => $data->id,
+                        ])->first();
+                        switch ($i) {
+                            case ($i == 1):
+                                $finalData += ['product_variant_one' => $cid->id];
+                                break;
+                            case ($i == 2):
+                                $finalData += ['product_variant_two' => $cid->id];
+                                break;
+                            case ($i == 3):
+                                $finalData += ['product_variant_three' => $cid->id];
+                                break;
+                            default:
+                                return "somthing want to wrong";
+                        }
+                    }
                 }
+                $finalData += ["price" => $pvp["price"], "stock" => $pvp["stock"], "product_id" => $data->id];
+                ProductVariantPrice::insert($finalData);
+                $finalData = [];
             }
-            
-           $pvpSave = new ProductVariantPrice();
-           if(isset($finalData[0]['product_variant_1'])){
-            $pvpSave->product_variant_one =$finalData[0]['product_variant_1'];
-           }
-           if(isset($finalData[1]['product_variant_2'])){
-            $pvpSave->product_variant_two =$finalData[1]['product_variant_2'];
-           }
-           if(isset($finalData[2]['product_variant_3'])){
-            $pvpSave->product_variant_three =$finalData[2]['product_variant_3'];
-           }
-           $pvpSave->price =$pvp['price'];
-           $pvpSave->stock =$pvp['stock'];
-           $pvpSave->product_id = $data->id;
-           $pvpSave->save(); 
-           $finalData = [];       
-        }
-           
             DB::commit();
             return response()->json([
                 'id' => $data->id,
@@ -136,10 +155,29 @@ class ProductController extends Controller
      */
     public function edit(Product $product)
     {
-        
-        $single_product = Product::where('id',$product->id)->with('ProductVariantPrice')->first();
+        // return $searchVariants = Variant::query()
+        //    ->addSelect([
+        //        'productVariant_id' => ProductVariant::query()
+        //        ->whereColumn('variants.id','product_variants.variant_id')
+        //        ->orderBy('id','desc')
+        //        ->select('id')
+        //        ->limit(1)           
+        //    ])->addSelect([
+        //     'name' => ProductVariant::query()
+        //     ->whereColumn('variants.id','product_variants.variant_id')
+        //     ->orderBy('id','desc')
+        //     ->select('variant')
+        //     ->limit(1)
+        // ])
+        //    ->get();
+
+        // $single_product = Product::where('id', $product->id)->with('ProductVariantPrice')->first();
+         $single_product = Product::where('id', $product->id)
+         ->with("ProductVariant","ProductVariantPrice.pvone","ProductVariantPrice.pvtwo","ProductVariantPrice.pvthree")
+         ->first();
+    
         $variants = Variant::all();
-        return view('products.edit', compact('single_product','variants'));
+        return view('products.edit', compact('single_product', 'variants'));
     }
 
     /**
@@ -149,9 +187,9 @@ class ProductController extends Controller
      * @param \App\Models\Product $product
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Product $product)
+    public function update(Request $request)
     {
-        //
+        return 'ok';
     }
 
     /**
@@ -162,6 +200,5 @@ class ProductController extends Controller
      */
     public function destroy(Product $product)
     {
-        //
     }
 }

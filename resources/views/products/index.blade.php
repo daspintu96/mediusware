@@ -14,7 +14,7 @@
                     @foreach($searchVariants as $sv)
                     <option disabled>----{{$sv->title}}---- </option>
                     @foreach($sv->productVariant as $v)
-                    <option value="{{$v->id}}">{{$v->variant}} </option>
+                    <option value="{{$v->variant}}">{{$v->variant}} </option>
                     @endforeach
                     @endforeach
                 </select>
